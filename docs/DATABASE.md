@@ -102,7 +102,7 @@ deleted_at に日付が入っているなら「このコメントは削除され
 
 ### generate コマンド
 
-`bin/rails generate model ChatThread post_id:integer chat_thread_id:integer user_id:integer content:string deleted_at:timestamp`
+`bin/rails generate model Post post_id:integer chat_thread_id:integer user_id:integer content:string deleted_at:timestamp`
 
 ## 【保留】boards（掲示板テーブル）
 
