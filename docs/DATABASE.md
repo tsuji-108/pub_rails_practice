@@ -3,7 +3,7 @@
 ## テーブル一覧
 
 - users（ユーザーテーブル）
-- threads（スレッドテーブル）
+- chat_threads（スレッドテーブル）
 - posts（投稿テーブル）
 - 【保留】boards（掲示板テーブル）
 - 【保留】attachments（添付ファイル管理テーブル）
@@ -22,8 +22,8 @@ users {
   TIMESTAMP    updated_at
 }
 
-threads {
-  INT          thread_id
+chat_threads {
+  INT          chat_thread_id
   INT          user_id
   VARCHAR(255) title
   VARCHAR(255) description
@@ -33,7 +33,7 @@ threads {
 
 posts {
   INT       post_id
-  INT       thread_id
+  INT       chat_thread_id
   INT       user_id
   TEXT      content
   TIMESTAMP created_at
@@ -41,10 +41,10 @@ posts {
   TIMESTAMP deleted_at
 }
 
-users ||--o{ threads : ""
+users ||--o{ chat_threads : ""
 users ||--o{ posts : ""
 
-threads ||--o{ posts : ""
+chat_threads ||--o{ posts : ""
 ```
 
 ## users（ユーザー管理テーブル）
@@ -61,30 +61,48 @@ threads ||--o{ posts : ""
 
 ↑ にいろいろと書いたが、Rails が提供するユーザー管理に沿えれば、別にそれで構わない。
 
-## threads（スレッド管理テーブル）
+### generate コマンド
 
-| カラム名    | データ型     | 制約                                                  | 説明                      |
-| ----------- | ------------ | ----------------------------------------------------- | ------------------------- |
-| thread_id   | INT          | PRIMARY KEY, AUTO_INCREMENT                           | スレッド ID               |
-| user_id     | INT          | FOREIGN KEY (users)                                   | スレッド作成者ユーザー ID |
-| title       | VARCHAR(255) | NOT NULL                                              | スレッドタイトル          |
-| description | VARCHAR(255) | NOT NULL                                              | スレッド説明文            |
-| created_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP                             | 作成日時                  |
-| updated_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時                  |
+`bin/rails generate authentication`
+
+## chat_threads（スレッド管理テーブル）
+
+| カラム名       | データ型     | 制約                                                  | 説明                      |
+| -------------- | ------------ | ----------------------------------------------------- | ------------------------- |
+| chat_thread_id | INT          | PRIMARY KEY, AUTO_INCREMENT                           | スレッド ID               |
+| user_id        | INT          | FOREIGN KEY (users)                                   | スレッド作成者ユーザー ID |
+| title          | VARCHAR(255) | NOT NULL                                              | スレッドタイトル          |
+| description    | VARCHAR(255) | NOT NULL                                              | スレッド説明文            |
+| created_at     | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP                             | 作成日時                  |
+| updated_at     | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時                  |
+
+### generate コマンド
+
+`bin/rails generate model ChatThread chat_thread_id:integer user_id:integer title:string description:string`
+
+`bin/rails generate model Thread` では以下のエラーが発生するため、chat_threads (ChatThread)とします。
+
+```
+The name 'Thread' is either already used in your application or reserved by Ruby on Rails. Please choose an alternative or use --skip-collision-check or --force to skip this check and run this generator again.
+```
 
 ## posts(スレッド内の投稿管理テーブル)
 
-| カラム名   | データ型  | 制約                                                  | 説明              |
-| ---------- | --------- | ----------------------------------------------------- | ----------------- |
-| post_id    | INT       | PRIMARY KEY, AUTO_INCREMENT                           | 投稿 ID           |
-| thread_id  | INT       | FOREIGN KEY (threads)                                 | スレッド ID       |
-| user_id    | INT       | FOREIGN KEY (users)                                   | 投稿者ユーザー ID |
-| content    | TEXT      | NOT NULL                                              | 投稿内容          |
-| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP                             | 作成日時          |
-| updated_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時          |
-| deleted_at | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP                           | 削除日時          |
+| カラム名       | データ型  | 制約                                                  | 説明              |
+| -------------- | --------- | ----------------------------------------------------- | ----------------- |
+| post_id        | INT       | PRIMARY KEY, AUTO_INCREMENT                           | 投稿 ID           |
+| chat_thread_id | INT       | FOREIGN KEY (chat_threads)                            | スレッド ID       |
+| user_id        | INT       | FOREIGN KEY (users)                                   | 投稿者ユーザー ID |
+| content        | TEXT      | NOT NULL                                              | 投稿内容          |
+| created_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP                             | 作成日時          |
+| updated_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時          |
+| deleted_at     | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP                           | 削除日時          |
 
 deleted_at に日付が入っているなら「このコメントは削除されました」の表記にする。
+
+### generate コマンド
+
+`bin/rails generate model Post post_id:integer chat_thread_id:integer user_id:integer content:string deleted_at:timestamp`
 
 ## 【保留】boards（掲示板テーブル）
 
