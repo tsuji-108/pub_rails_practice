@@ -10,14 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_18_101747) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_25_091712) do
+  create_table "boards", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "title"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "chat_threads", force: :cascade do |t|
+    t.integer "board_id", null: false
     t.integer "chat_thread_id"
     t.datetime "created_at", null: false
     t.string "description"
     t.string "title"
     t.datetime "updated_at", null: false
     t.integer "user_id"
+    t.index ["board_id"], name: "index_chat_threads_on_board_id"
   end
 
   create_table "posts", force: :cascade do |t|
@@ -25,7 +34,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_18_101747) do
     t.string "content"
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
-    t.integer "post_id"
     t.datetime "updated_at", null: false
     t.integer "user_id"
   end
@@ -47,5 +55,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_18_101747) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "chat_threads", "boards"
   add_foreign_key "sessions", "users"
 end
