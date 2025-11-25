@@ -3,6 +3,7 @@
 ## テーブル一覧
 
 - users（ユーザーテーブル）
+- boards（ボードテーブル）
 - chat_threads（スレッドテーブル）
 - posts（投稿テーブル）
 - 【保留】boards（掲示板テーブル）
@@ -13,18 +14,25 @@
 ```mermaid
 erDiagram
 users {
-  INT          user_id
-  VARCHAR(255) username
-  VARCHAR(255) email
-  VARCHAR(255) password
-  VARCHAR(255) display_name
+  INT          id
+  VARCHAR(255) email_address
+  VARCHAR(255) password_digest
+  TIMESTAMP    created_at
+  TIMESTAMP    updated_at
+}
+
+boards {
+  INT          id
+  VARCHAR(255) title
+  VARCHAR(255) description
   TIMESTAMP    created_at
   TIMESTAMP    updated_at
 }
 
 chat_threads {
-  INT          chat_thread_id
+  INT          id
   INT          user_id
+  INT          board_id
   VARCHAR(255) title
   VARCHAR(255) description
   TIMESTAMP    created_at
@@ -32,9 +40,9 @@ chat_threads {
 }
 
 posts {
-  INT       post_id
-  INT       chat_thread_id
+  INT       id
   INT       user_id
+  INT       chat_thread_id
   TEXT      content
   TIMESTAMP created_at
   TIMESTAMP updated_at
@@ -44,20 +52,19 @@ posts {
 users ||--o{ chat_threads : ""
 users ||--o{ posts : ""
 
+boards ||--o{ chat_threads : ""
 chat_threads ||--o{ posts : ""
 ```
 
 ## users（ユーザー管理テーブル）
 
-| カラム名     | データ型     | 制約                                                  | 説明           |
-| ------------ | ------------ | ----------------------------------------------------- | -------------- |
-| user_id      | INT          | PRIMARY KEY, AUTO_INCREMENT                           | ユーザー ID    |
-| username     | VARCHAR(255) | UNIQUE, NOT NULL                                      | ユーザー名     |
-| email        | VARCHAR(255) | UNIQUE, NOT NULL                                      | メールアドレス |
-| password     | VARCHAR(255) | NOT NULL                                              | パスワード     |
-| display_name | VARCHAR(255) |                                                       | 表示名         |
-| created_at   | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP                             | 作成日時       |
-| updated_at   | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時       |
+| カラム名        | データ型     | 制約                                                  | 説明           |
+| --------------- | ------------ | ----------------------------------------------------- | -------------- |
+| id              | INT          | PRIMARY KEY, UNIQUE KEY                               | ユーザー ID    |
+| email_address   | VARCHAR(255) | UNIQUE, NOT NULL                                      | メールアドレス |
+| password_digest | VARCHAR(255) | NOT NULL                                              | パスワード     |
+| created_at      | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP                             | 作成日時       |
+| updated_at      | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時       |
 
 ↑ にいろいろと書いたが、Rails が提供するユーザー管理に沿えれば、別にそれで構わない。
 
@@ -65,20 +72,45 @@ chat_threads ||--o{ posts : ""
 
 `bin/rails generate authentication`
 
-## chat_threads（スレッド管理テーブル）
+### create コマンド
 
-| カラム名       | データ型     | 制約                                                  | 説明                      |
-| -------------- | ------------ | ----------------------------------------------------- | ------------------------- |
-| chat_thread_id | INT          | PRIMARY KEY, AUTO_INCREMENT                           | スレッド ID               |
-| user_id        | INT          | FOREIGN KEY (users)                                   | スレッド作成者ユーザー ID |
-| title          | VARCHAR(255) | NOT NULL                                              | スレッドタイトル          |
-| description    | VARCHAR(255) | NOT NULL                                              | スレッド説明文            |
-| created_at     | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP                             | 作成日時                  |
-| updated_at     | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時                  |
+`User.create(email_address: "user@example.org", password: "secret", password_confirmation: "secret")`
+
+## boards（掲示板テーブル）
+
+| カラム名    | データ型     | 制約                                                  | 説明           |
+| ----------- | ------------ | ----------------------------------------------------- | -------------- |
+| id          | INT          | PRIMARY KEY, UNIQUE KEY                               | 掲示板 ID      |
+| title       | VARCHAR(255) | NOT NULL                                              | 掲示板タイトル |
+| description | VARCHAR(255) | NOT NULL                                              | 掲示板説明文   |
+| created_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP                             | 作成日時       |
+| updated_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時       |
+
+いったん board は 1 つのみとする。
 
 ### generate コマンド
 
-`bin/rails generate model ChatThread chat_thread_id:integer user_id:integer title:string description:string`
+`bin/rails generate model Board title:string description:string`
+
+### create コマンド
+
+`Board.create(title: "first boad title", description: "first board description")`
+
+## chat_threads（スレッド管理テーブル）
+
+| カラム名    | データ型     | 制約                                                  | 説明                      |
+| ----------- | ------------ | ----------------------------------------------------- | ------------------------- |
+| id          | INT          | PRIMARY KEY, UNIQUE KEY                               | スレッド ID               |
+| user_id     | INT          | FOREIGN KEY (users)                                   | スレッド作成者ユーザー ID |
+| board_id    | INT          | FOREIGN KEY (boards)                                  | スレッドが属する掲示板 ID |
+| title       | VARCHAR(255) | NOT NULL                                              | スレッドタイトル          |
+| description | VARCHAR(255) | NOT NULL                                              | スレッド説明文            |
+| created_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP                             | 作成日時                  |
+| updated_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時                  |
+
+### generate コマンド
+
+`bin/rails generate model ChatThread user:references board:references title:string description:string`
 
 `bin/rails generate model Thread` では以下のエラーが発生するため、chat_threads (ChatThread)とします。
 
@@ -86,28 +118,31 @@ chat_threads ||--o{ posts : ""
 The name 'Thread' is either already used in your application or reserved by Ruby on Rails. Please choose an alternative or use --skip-collision-check or --force to skip this check and run this generator again.
 ```
 
+### create コマンド
+
+`ChatThread.create(user_id: 1, board_id: 1, title: "Thread title", description: "Thread description")`
+
 ## posts(スレッド内の投稿管理テーブル)
 
-| カラム名       | データ型  | 制約                                                  | 説明              |
-| -------------- | --------- | ----------------------------------------------------- | ----------------- |
-| post_id        | INT       | PRIMARY KEY, AUTO_INCREMENT                           | 投稿 ID           |
-| chat_thread_id | INT       | FOREIGN KEY (chat_threads)                            | スレッド ID       |
-| user_id        | INT       | FOREIGN KEY (users)                                   | 投稿者ユーザー ID |
-| content        | TEXT      | NOT NULL                                              | 投稿内容          |
-| created_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP                             | 作成日時          |
-| updated_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時          |
-| deleted_at     | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP                           | 削除日時          |
+| カラム名       | データ型  | 制約                                                  | 説明                       |
+| -------------- | --------- | ----------------------------------------------------- | -------------------------- |
+| id             | INT       | PRIMARY KEY, UNIQUE KEY                               | 投稿 ID                    |
+| user_id        | INT       | FOREIGN KEY (users)                                   | 投稿者ユーザー ID          |
+| chat_thread_id | INT       | FOREIGN KEY (chat_threads)                            | post が紐づくスレッド ID |
+| content        | TEXT      | NOT NULL                                              | 投稿内容                   |
+| created_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP                             | 作成日時                   |
+| updated_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時                   |
+| deleted_at     | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP                           | 削除日時                   |
 
 deleted_at に日付が入っているなら「このコメントは削除されました」の表記にする。
 
 ### generate コマンド
 
-`bin/rails generate model Post post_id:integer chat_thread_id:integer user_id:integer content:string deleted_at:timestamp`
+`bin/rails generate model Post user_id:integer content:string deleted_at:timestamp`
 
-## 【保留】boards（掲示板テーブル）
+### create コマンド
 
-複数の掲示板をとりまとめるテーブルを作成しようと思いましたが、やめる。
-いったん、掲示板は 1 つのみとします。
+`Post.create(user_id: 1, chat_thread_id: 1, content: "post content")`
 
 ## 【保留】attachments（添付ファイル管理テーブル）
 
@@ -116,7 +151,7 @@ deleted_at に日付が入っているなら「このコメントは削除され
 
 ## 保留にしたテーブル・機能
 
-- 掲示板を複数にする。boards（掲示板テーブル）の作成。
+- 掲示板を複数にする。
 - ファイル添付可能にする。attachments（添付ファイル管理テーブル）の作成
   - 単にアップロードしたファイルに + 乱数 + timestamp でリネームして保存で良い気もするが。
 - 検索機能
