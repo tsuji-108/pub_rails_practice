@@ -3,6 +3,7 @@
 ## テーブル一覧
 
 - users（ユーザーテーブル）
+- boards（ボードテーブル）
 - chat_threads（スレッドテーブル）
 - posts（投稿テーブル）
 - 【保留】boards（掲示板テーブル）
@@ -22,9 +23,18 @@ users {
   TIMESTAMP    updated_at
 }
 
+boards {
+  INT          board_id
+  VARCHAR(255) title
+  VARCHAR(255) description
+  TIMESTAMP    created_at
+  TIMESTAMP    updated_at
+}
+
 chat_threads {
   INT          chat_thread_id
   INT          user_id
+  INT          board_id
   VARCHAR(255) title
   VARCHAR(255) description
   TIMESTAMP    created_at
@@ -44,6 +54,7 @@ posts {
 users ||--o{ chat_threads : ""
 users ||--o{ posts : ""
 
+boards ||--o{ chat_threads : ""
 chat_threads ||--o{ posts : ""
 ```
 
@@ -65,12 +76,29 @@ chat_threads ||--o{ posts : ""
 
 `bin/rails generate authentication`
 
+## boards（掲示板テーブル）
+
+| カラム名    | データ型     | 制約                                                  | 説明           |
+| ----------- | ------------ | ----------------------------------------------------- | -------------- |
+| board_id    | INT          | PRIMARY KEY, AUTO_INCREMENT                           | 掲示板 ID      |
+| title       | VARCHAR(255) | NOT NULL                                              | 掲示板タイトル |
+| description | VARCHAR(255) | NOT NULL                                              | 掲示板説明文   |
+| created_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP                             | 作成日時       |
+| updated_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時       |
+
+いったん board は 1 つのみとする。
+
+### generate コマンド
+
+`bin/rails generate model Board board_id:integer title:string description:string`
+
 ## chat_threads（スレッド管理テーブル）
 
 | カラム名       | データ型     | 制約                                                  | 説明                      |
 | -------------- | ------------ | ----------------------------------------------------- | ------------------------- |
 | chat_thread_id | INT          | PRIMARY KEY, AUTO_INCREMENT                           | スレッド ID               |
 | user_id        | INT          | FOREIGN KEY (users)                                   | スレッド作成者ユーザー ID |
+| board_id       | INT          | FOREIGN KEY (users)                                   | スレッドが属する掲示板 ID |
 | title          | VARCHAR(255) | NOT NULL                                              | スレッドタイトル          |
 | description    | VARCHAR(255) | NOT NULL                                              | スレッド説明文            |
 | created_at     | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP                             | 作成日時                  |
@@ -78,7 +106,7 @@ chat_threads ||--o{ posts : ""
 
 ### generate コマンド
 
-`bin/rails generate model ChatThread chat_thread_id:integer user_id:integer title:string description:string`
+`bin/rails generate model ChatThread chat_thread_id:integer user_id:integer board_id:integer title:string description:string`
 
 `bin/rails generate model Thread` では以下のエラーが発生するため、chat_threads (ChatThread)とします。
 
@@ -104,11 +132,6 @@ deleted_at に日付が入っているなら「このコメントは削除され
 
 `bin/rails generate model Post post_id:integer chat_thread_id:integer user_id:integer content:string deleted_at:timestamp`
 
-## 【保留】boards（掲示板テーブル）
-
-複数の掲示板をとりまとめるテーブルを作成しようと思いましたが、やめる。
-いったん、掲示板は 1 つのみとします。
-
 ## 【保留】attachments（添付ファイル管理テーブル）
 
 投稿にファイルを添付できるようにしようかと思ったが、いったん後で。  
@@ -116,7 +139,7 @@ deleted_at に日付が入っているなら「このコメントは削除され
 
 ## 保留にしたテーブル・機能
 
-- 掲示板を複数にする。boards（掲示板テーブル）の作成。
+- 掲示板を複数にする。
 - ファイル添付可能にする。attachments（添付ファイル管理テーブル）の作成
   - 単にアップロードしたファイルに + 乱数 + timestamp でリネームして保存で良い気もするが。
 - 検索機能
