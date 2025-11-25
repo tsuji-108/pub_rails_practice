@@ -62,7 +62,7 @@ chat_threads ||--o{ posts : ""
 
 | カラム名     | データ型     | 制約                                                  | 説明           |
 | ------------ | ------------ | ----------------------------------------------------- | -------------- |
-| user_id      | INT          | PRIMARY KEY, AUTO_INCREMENT                           | ユーザー ID    |
+| user_id      | INT          | PRIMARY KEY, UNIQUE KEY                               | ユーザー ID    |
 | username     | VARCHAR(255) | UNIQUE, NOT NULL                                      | ユーザー名     |
 | email        | VARCHAR(255) | UNIQUE, NOT NULL                                      | メールアドレス |
 | password     | VARCHAR(255) | NOT NULL                                              | パスワード     |
@@ -80,7 +80,7 @@ chat_threads ||--o{ posts : ""
 
 | カラム名    | データ型     | 制約                                                  | 説明           |
 | ----------- | ------------ | ----------------------------------------------------- | -------------- |
-| board_id    | INT          | PRIMARY KEY, AUTO_INCREMENT                           | 掲示板 ID      |
+| board_id    | INT          | PRIMARY KEY, UNIQUE KEY                               | 掲示板 ID      |
 | title       | VARCHAR(255) | NOT NULL                                              | 掲示板タイトル |
 | description | VARCHAR(255) | NOT NULL                                              | 掲示板説明文   |
 | created_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP                             | 作成日時       |
@@ -96,7 +96,7 @@ chat_threads ||--o{ posts : ""
 
 | カラム名       | データ型     | 制約                                                  | 説明                      |
 | -------------- | ------------ | ----------------------------------------------------- | ------------------------- |
-| chat_thread_id | INT          | PRIMARY KEY, AUTO_INCREMENT                           | スレッド ID               |
+| chat_thread_id | INT          | PRIMARY KEY, UNIQUE KEY                               | スレッド ID               |
 | user_id        | INT          | FOREIGN KEY (users)                                   | スレッド作成者ユーザー ID |
 | board_id       | INT          | FOREIGN KEY (users)                                   | スレッドが属する掲示板 ID |
 | title          | VARCHAR(255) | NOT NULL                                              | スレッドタイトル          |
@@ -118,7 +118,7 @@ The name 'Thread' is either already used in your application or reserved by Ruby
 
 | カラム名       | データ型  | 制約                                                  | 説明              |
 | -------------- | --------- | ----------------------------------------------------- | ----------------- |
-| post_id        | INT       | PRIMARY KEY, AUTO_INCREMENT                           | 投稿 ID           |
+| post_id        | INT       | PRIMARY KEY, UNIQUE KEY                               | 投稿 ID           |
 | chat_thread_id | INT       | FOREIGN KEY (chat_threads)                            | スレッド ID       |
 | user_id        | INT       | FOREIGN KEY (users)                                   | 投稿者ユーザー ID |
 | content        | TEXT      | NOT NULL                                              | 投稿内容          |
