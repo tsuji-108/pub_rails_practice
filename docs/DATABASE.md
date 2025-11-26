@@ -6,7 +6,7 @@
 - boards（ボードテーブル）
 - chat_threads（スレッドテーブル）
 - posts（投稿テーブル）
-- 【保留】boards（掲示板テーブル）
+- boards（掲示板テーブル）
 - 【保留】attachments（添付ファイル管理テーブル）
 
 ## ER 図
@@ -143,6 +143,7 @@ deleted_at に日付が入っているなら「このコメントは削除され
 ### create コマンド
 
 `Post.create(user_id: 1, chat_thread_id: 1, content: "post content")`
+`Post.create(user_id: 1, chat_thread_id: 1, content: "テスト投稿です！")`
 
 ## 【保留】attachments（添付ファイル管理テーブル）
 
@@ -155,4 +156,4 @@ deleted_at に日付が入っているなら「このコメントは削除され
 - ファイル添付可能にする。attachments（添付ファイル管理テーブル）の作成
   - 単にアップロードしたファイルに + 乱数 + timestamp でリネームして保存で良い気もするが。
 - 検索機能
-  - Rails より SQL がどうのこうのになりそうなので保留。
+  - Rails より SQL がどうのこうのになりそうなので保留。やってみたくはあるが。

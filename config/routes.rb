@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
 
-  get "/boards", to:"boards#index"
+  get "/boards", to: "boards#index"
+  get "/boards/:board_id", to: "boards#show"
 
+  get "/boards/:board_id/thread/:chatThread_id", to: "chat_threads#show"
 end

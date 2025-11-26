@@ -1,0 +1,18 @@
+<h1><%= @chatThread.title %></h1>
+<p><%= @chatThread.description %></p>
+<p>スレッド詳細ページ</p>
+
+<hr>
+<% if @posts.present? %>
+  <ul>
+    <% Array(@posts).each do |post| %>
+      <li><%= post.content %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>投稿がありません。</p>
+<% end %>
+
+<hr>
+
+<%= link_to "#{@board.title}のスレッド一覧に戻る", "/boards/#{@board.id}" %>
