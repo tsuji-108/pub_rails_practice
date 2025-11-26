@@ -143,6 +143,7 @@ deleted_at に日付が入っているなら「このコメントは削除され
 ### create コマンド
 
 `Post.create(user_id: 1, chat_thread_id: 1, content: "post content")`
+`Post.create(user_id: 1, chat_thread_id: 1, content: "テスト投稿です！")`
 
 ## 【保留】attachments（添付ファイル管理テーブル）
 
