@@ -1,13 +1,11 @@
-<h1>Boards(今は1つしかない)</h1>
-<p><%= @board.title %></p>
-<p><%= @board.description %></p>
+<h1>掲示板一覧</h1>
 
-<% if @chatThread.present? %>
+<% if @boards.present? %>
   <ul>
-    <% Array(@chatThread).each do |thread| %>
-      <li>チャットスレッド id: <%= thread.id %><br/>ここに a タグで スレッドへのリンクを作成する</li>
+    <% Array(@boards).each do |board| %>
+      <li><%= link_to "#{board.title}", "/boards/#{board.id}" %></li>
     <% end %>
   </ul>
 <% else %>
-  <p>チャットスレッドがありません。</p>
+  <p>掲示板がありません。</p>
 <% end %>
