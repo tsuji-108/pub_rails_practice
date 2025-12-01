@@ -46,7 +46,7 @@ posts {
   TEXT      content
   TIMESTAMP created_at
   TIMESTAMP updated_at
-  TIMESTAMP deleted_at
+  TIMESTAMP archived_at
 }
 
 users ||--o{ chat_threads : ""
@@ -132,13 +132,13 @@ The name 'Thread' is either already used in your application or reserved by Ruby
 | content        | TEXT      | NOT NULL                                              | 投稿内容                   |
 | created_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP                             | 作成日時                   |
 | updated_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新日時                   |
-| deleted_at     | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP                           | 削除日時                   |
+| archived_at     | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP                           | 削除日時                   |
 
-deleted_at に日付が入っているなら「このコメントは削除されました」の表記にする。
+archived_at に日付が入っているなら「このコメントは削除されました」の表記にする。
 
 ### generate コマンド
 
-`bin/rails generate model Post user_id:integer content:string deleted_at:timestamp`
+`bin/rails generate model Post user_id:integer content:string archived_at:timestamp`
 
 ### create コマンド
 
