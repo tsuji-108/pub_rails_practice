@@ -3,9 +3,9 @@
 one:
   user_id: 1
   content: MyString
-  deleted_at: null
+  archived_at: null
 
 two:
   user_id: 1
   content: MyString
-  deleted_at: null
+  archived_at: null
