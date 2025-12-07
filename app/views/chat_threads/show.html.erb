@@ -6,11 +6,25 @@
 <% if @posts.present? %>
   <ul>
     <% Array(@posts).each do |post| %>
-      <li><%= post.content %></li>
+      <li>
+        <div>ユーザー名<%= post.user_id %></div>
+        <div>作成日時<time datetime="<%= post.created_at %>"><%= post.created_at %></time></div>
+        <div><%= post.content %></div>
+      </li>
     <% end %>
   </ul>
 <% else %>
   <p>投稿がありません。</p>
+<% end %>
+
+<%= form_with model: @post, url: chat_thread_posts_path(board_id: @board.id, chatThread_id: @chatThread.id) do |f| %>
+  <%= hidden_field_tag :board_id, @board.id %>
+  <div class="field">
+    <%= f.label :content, "投稿内容" %><br>
+    <%= f.text_area :content %>
+  </div>
+
+  <%= f.submit "投稿する" %>
 <% end %>
 
 <hr>
