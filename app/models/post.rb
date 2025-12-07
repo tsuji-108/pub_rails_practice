@@ -1,4 +1,4 @@
 class Post < ApplicationRecord
   belongs_to :user
-  belongs_to :chatThread
+  belongs_to :chat_thread
 end
