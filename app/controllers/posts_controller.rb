@@ -18,8 +18,12 @@ class PostsController < ApplicationController
 
   def delete
     @post = Post.find(id: params[:id])
-    print(@post.id)
-    # board_id: @board.id, chatThread_id: @chatThread.id, id: post.id
+    if @post.delete
+      redirect_to board_chat_thread_path(board_id: @board.id, chatThread_id: @chatThread.id)
+    else
+      @posts = @chatThread.posts.order(created_at: :asc)
+      render "chat_threads/show", status: :unprocessable_entity
+    end
   end
 
   private
