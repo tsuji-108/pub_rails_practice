@@ -13,10 +13,7 @@
           <div><%= post.content %></div>
           <% if @currentUser != nil && @currentUser.id == post.user_id %>
             <div>
-              <%= form_with method: :patch do |form| %>
-                <%= hidden_field_tag :id, post.id %>
-                <%= form.button "削除する", formmethod: :delete, data: { confirm: "本当に削除しますか?" } %>
-              <% end %>
+              <%= button_to "削除する", chat_thread_post_path(board_id: @board.id, chatThread_id: @chatThread.id, id: post.id), method: :delete, data: { turbo_confirm: "本当に削除しますか?" } %>
             </div>
           <% end %>
         <% else %>
