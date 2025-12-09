@@ -9,4 +9,5 @@ Rails.application.routes.draw do
 
   get "/boards/:board_id/thread/:chatThread_id", to: "chat_threads#show", as: :board_chat_thread
   post "/boards/:board_id/thread/:chatThread_id/posts", to: "posts#create", as: :chat_thread_posts
+  delete "/boards/:board_id/thread/:chatThread_id/posts", to: "posts#delete", as: :chat_thread_delete
 end
