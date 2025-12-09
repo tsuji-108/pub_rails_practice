@@ -7,7 +7,8 @@ Rails.application.routes.draw do
   get "/boards", to: "boards#index"
   get "/boards/:board_id", to: "boards#show"
 
-  get "/boards/:board_id/thread/:chatThread_id", to: "chat_threads#show", as: :board_chat_thread
-  post "/boards/:board_id/thread/:chatThread_id/posts", to: "posts#create", as: :chat_thread_posts
-  delete "/boards/:board_id/thread/:chatThread_id/posts/:id", to: "posts#destroy", as: :chat_thread_post
+  get "/boards/:board_id/thread/:chatThread_id", to: "chat_threads#show"
+  post "/boards/:board_id/thread/:chatThread_id/posts", to: "posts#create"
+  put "/boards/:board_id/thread/:chatThread_id/posts/:id", to: "posts#update"
+  delete "/boards/:board_id/thread/:chatThread_id/posts/:id", to: "posts#destroy"
 end
