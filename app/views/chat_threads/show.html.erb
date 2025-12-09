@@ -7,9 +7,18 @@
   <ul>
     <% Array(@posts).each do |post| %>
       <li>
-        <div>ユーザー名<%= post.user_id %></div>
-        <div>作成日時<time datetime="<%= post.created_at %>"><%= post.created_at %></time></div>
-        <div><%= post.content %></div>
+        <% if post.archived_at == nil %>
+          <div>ユーザーID: <%= post.user_id %></div>
+          <div>作成日時<time datetime="<%= post.created_at %>"><%= post.created_at %></time></div>
+          <div><%= post.content %></div>
+          <% if @currentUser != nil && @currentUser.id == post.user_id %>
+            <div>
+              <%= button_to "削除する", chat_thread_post_path(board_id: @board.id, chatThread_id: @chatThread.id, id: post.id), method: :delete, data: { turbo_confirm: "本当に削除しますか?" } %>
+            </div>
+          <% end %>
+        <% else %>
+          <p>この投稿は削除されました</p>
+        <% end %>
       </li>
     <% end %>
   </ul>

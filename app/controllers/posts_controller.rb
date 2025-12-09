@@ -9,7 +9,19 @@ class PostsController < ApplicationController
     @post.user = Current.user
 
     if @post.save
-      redirect_to board_chat_thread_path(board_id: @board.id, chatThread_id: @chatThread.id), notice: "投稿しました。"
+      redirect_to board_chat_thread_path(board_id: @board.id, chatThread_id: @chatThread.id)
+    else
+      @posts = @chatThread.posts.order(created_at: :asc)
+      render "chat_threads/show", status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @board = Board.find(params[:board_id])
+    @chatThread = ChatThread.find(params[:chatThread_id])
+    @post = @chatThread.posts.find(params[:id])
+    if @post.destroy
+      redirect_to board_chat_thread_path(board_id: @board.id, chatThread_id: @chatThread.id)
     else
       @posts = @chatThread.posts.order(created_at: :asc)
       render "chat_threads/show", status: :unprocessable_entity

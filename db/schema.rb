@@ -30,10 +30,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_091712) do
   end
 
   create_table "posts", force: :cascade do |t|
+    t.datetime "archived_at"
     t.integer "chat_thread_id"
     t.string "content"
     t.datetime "created_at", null: false
-    t.datetime "deleted_at"
     t.datetime "updated_at", null: false
     t.integer "user_id"
   end

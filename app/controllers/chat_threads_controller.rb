@@ -5,5 +5,6 @@ class ChatThreadsController < ApplicationController
     # NOTE: .find は 1 件のみ取得する。where は複数件取得する。
     @posts = @chatThread.posts.order(created_at: :asc)
     @post = @chatThread.posts.build
+    @currentUser = Current.user
   end
 end
