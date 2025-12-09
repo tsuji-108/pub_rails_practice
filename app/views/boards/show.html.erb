@@ -1,17 +1,14 @@
-<div class="container">
+<div class="container mt-3">
   <h1><%= @board.title %></h1>
   <p><%= @board.description %></p>
-  <p>掲示板詳細ページ</p>
 
   <% if @chatThread.present? %>
-    <ul>
+    <ul class="list-group">
       <% Array(@chatThread).each do |thread| %>
-        <li><%= link_to "#{thread.title}", "/boards/#{@board.id}/thread/#{thread.id}" %></li>
+        <li class="list-group-item"><%= link_to "#{thread.title}", "/boards/#{@board.id}/thread/#{thread.id}" %></li>
       <% end %>
     </ul>
   <% else %>
     <p>スレッドがありません。</p>
   <% end %>
-
-  <%= link_to "掲示板一覧に戻る", "/boards" %>
 </div>

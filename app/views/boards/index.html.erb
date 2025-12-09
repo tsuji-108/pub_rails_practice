@@ -1,9 +1,9 @@
-<div class="container">
+<div class="container mt-3">
   <h1>掲示板一覧</h1>
   <% if @boards.present? %>
-    <ul>
+    <ul class="list-group">
       <% Array(@boards).each do |board| %>
-        <li><%= link_to "#{board.title}", "/boards/#{board.id}" %></li>
+        <li class="list-group-item"><%= link_to "#{board.title}", "/boards/#{board.id}" %></li>
       <% end %>
     </ul>
   <% else %>
