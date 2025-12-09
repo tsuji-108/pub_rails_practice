@@ -13,7 +13,7 @@
           <div><%= post.content %></div>
           <% if @currentUser != nil && @currentUser.id == post.user_id %>
             <div>
-              <%= button_to "削除する", chat_thread_post_path(board_id: @board.id, chatThread_id: @chatThread.id, id: post.id), method: :delete, data: { turbo_confirm: "本当に削除しますか?" } %>
+              <%= button_to "削除する", "/boards/#{@board.id}/thread/#{@chatThread.id}/posts/#{post.id}", method: :delete, data: { turbo_confirm: "本当に削除しますか?" } %>
             </div>
           <% end %>
         <% else %>
@@ -26,7 +26,7 @@
   <p>投稿がありません。</p>
 <% end %>
 
-<%= form_with model: @post, url: chat_thread_posts_path(board_id: @board.id, chatThread_id: @chatThread.id) do |f| %>
+<%= form_with model: @post, url: "/boards/#{@board.id}/thread/#{@chatThread.id}/posts" do |f| %>
   <%= hidden_field_tag :board_id, @board.id %>
   <div class="field">
     <%= f.label :content, "投稿内容" %><br>
@@ -39,3 +39,4 @@
 <hr>
 
 <%= link_to "#{@board.title}のスレッド一覧に戻る", "/boards/#{@board.id}" %>
+z
