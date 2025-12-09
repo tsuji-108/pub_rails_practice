@@ -1,42 +1,43 @@
-<h1><%= @chatThread.title %></h1>
-<p><%= @chatThread.description %></p>
-<p>スレッド詳細ページ</p>
+<div class="container">
+  <h1><%= @chatThread.title %></h1>
+  <p><%= @chatThread.description %></p>
+  <p>スレッド詳細ページ</p>
 
-<hr>
-<% if @posts.present? %>
-  <ul>
-    <% Array(@posts).each do |post| %>
-      <li>
-        <% if post.archived_at == nil %>
-          <div>ユーザーID: <%= post.user_id %></div>
-          <div>作成日時<time datetime="<%= post.created_at %>"><%= post.created_at %></time></div>
-          <div><%= post.content %></div>
-          <% if @currentUser != nil && @currentUser.id == post.user_id %>
-            <div>
-              <%= button_to "削除する", "/boards/#{@board.id}/thread/#{@chatThread.id}/posts/#{post.id}", method: :delete, data: { turbo_confirm: "本当に削除しますか?" } %>
-            </div>
+  <hr>
+  <% if @posts.present? %>
+    <ul>
+      <% Array(@posts).each do |post| %>
+        <li>
+          <% if post.archived_at == nil %>
+            <div>ユーザーID: <%= post.user_id %></div>
+            <div>作成日時<time datetime="<%= post.created_at %>"><%= post.created_at %></time></div>
+            <div><%= post.content %></div>
+            <% if @currentUser != nil && @currentUser.id == post.user_id %>
+              <div>
+                <%= button_to "削除する", "/boards/#{@board.id}/thread/#{@chatThread.id}/posts/#{post.id}", method: :delete, data: { turbo_confirm: "本当に削除しますか?" } %>
+              </div>
+            <% end %>
+          <% else %>
+            <p>この投稿は削除されました</p>
           <% end %>
-        <% else %>
-          <p>この投稿は削除されました</p>
-        <% end %>
-      </li>
-    <% end %>
-  </ul>
-<% else %>
-  <p>投稿がありません。</p>
-<% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>投稿がありません。</p>
+  <% end %>
 
-<%= form_with model: @post, url: "/boards/#{@board.id}/thread/#{@chatThread.id}/posts" do |f| %>
-  <%= hidden_field_tag :board_id, @board.id %>
-  <div class="field">
-    <%= f.label :content, "投稿内容" %><br>
-    <%= f.text_area :content %>
-  </div>
+  <%= form_with model: @post, url: "/boards/#{@board.id}/thread/#{@chatThread.id}/posts" do |f| %>
+    <%= hidden_field_tag :board_id, @board.id %>
+    <div class="field">
+      <%= f.label :content, "投稿内容" %><br>
+      <%= f.text_area :content %>
+    </div>
 
-  <%= f.submit "投稿する" %>
-<% end %>
+    <%= f.submit "投稿する" %>
+  <% end %>
 
-<hr>
+  <hr>
 
-<%= link_to "#{@board.title}のスレッド一覧に戻る", "/boards/#{@board.id}" %>
-z
+  <%= link_to "#{@board.title}のスレッド一覧に戻る", "/boards/#{@board.id}" %>
+</div>

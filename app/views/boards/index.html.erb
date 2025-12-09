@@ -1,11 +1,12 @@
-<h1>掲示板一覧</h1>
-
-<% if @boards.present? %>
-  <ul>
-    <% Array(@boards).each do |board| %>
-      <li><%= link_to "#{board.title}", "/boards/#{board.id}" %></li>
-    <% end %>
-  </ul>
-<% else %>
-  <p>掲示板がありません。</p>
-<% end %>
+<div class="container">
+  <h1>掲示板一覧</h1>
+  <% if @boards.present? %>
+    <ul>
+      <% Array(@boards).each do |board| %>
+        <li><%= link_to "#{board.title}", "/boards/#{board.id}" %></li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>掲示板がありません。</p>
+  <% end %>
+</div>
