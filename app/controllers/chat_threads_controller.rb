@@ -28,8 +28,15 @@ class ChatThreadsController < ApplicationController
   end
 
   def update
-    # TODO:
-    render "boards/show", status: :unprocessable_entity
+    @chatThread = ChatThread.find(params[:chatThread_id])
+    @chatThread.title = params[:title]
+    @chatThread.description = params[:description]
+
+    if @chatThread.save
+      redirect_to "/boards/#{params[:board_id]}/thread/#{params[:chatThread_id]}"
+    else
+      render "boards/show", status: :unprocessable_entity
+    end
   end
 
   def destroy
