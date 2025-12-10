@@ -10,7 +10,7 @@
       </p>
       <div id="collapseOne" class="accordion-collapse collapse">
         <div class="accordion-body">
-            <%= form_with url: "/boards/#{@board.id}/thread/#{@chatThread.id}/", method: :put do |form| %>
+            <%= form_with url: "/boards/#{@board.id}/thread/#{@chatThread.id}/update", method: :put do |form| %>
               <%= hidden_field_tag :board_id, @board.id %>
               <%= hidden_field_tag :chatThread_id, @chatThread.id %>
               <div>
