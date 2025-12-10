@@ -9,6 +9,8 @@ Rails.application.routes.draw do
 
   get "/boards/:board_id/thread/:chatThread_id", to: "chat_threads#show"
   post "/boards/:board_id/thread", to: "chat_threads#create"
+  put "/boards/:board_id/thread/:chatThread_id", to: "chat_threads#update"
+  delete "/boards/:board_id/thread/:chatThread_id", to: "chat_threads#destroy"
 
   # TODO: Post に対する新規作成・更新・削除 URL は、/posts で良さそう。
   post "/boards/:board_id/thread/:chatThread_id/posts", to: "posts#create"

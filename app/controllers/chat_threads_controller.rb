@@ -26,4 +26,14 @@ class ChatThreadsController < ApplicationController
       render "boards/show", status: :unprocessable_entity
     end
   end
+
+  def update
+    # TODO:
+    render "boards/show", status: :unprocessable_entity
+  end
+
+  def destroy
+    # TODO:
+    render "boards/show", status: :unprocessable_entity
+  end
 end
