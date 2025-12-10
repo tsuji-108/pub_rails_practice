@@ -40,7 +40,11 @@ class ChatThreadsController < ApplicationController
   end
 
   def destroy
-    # TODO:
-    render "boards/show", status: :unprocessable_entity
+    @chatThread = ChatThread.find(params[:chatThread_id])
+    if @chatThread.delete
+      redirect_to "/boards/#{params[:board_id]}"
+    else
+      redirect_to "/boards/#{params[:board_id]}"
+    end
   end
 end
