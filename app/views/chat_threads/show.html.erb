@@ -9,10 +9,27 @@
           <% if post.archived_at == nil %>
             <div>ユーザーID: <%= post.user_id %></div>
             <div>作成日時<time datetime="<%= post.created_at %>"><%= post.created_at %></time></div>
-            <div><%= post.content %></div>
+            <div>
+              <% if @currentUser != nil && @currentUser.id == post.user_id %>
+                <div class="content js-update" data-post-id="<%= post.id %>"><%= post.content %></div>
+                <div class="form" style="display: none;">
+                  <%= form_with url: "/boards/#{@board.id}/thread/#{@chatThread.id}/posts/#{post.id}" do |f| %>
+                    <%= hidden_field_tag :board_id, @board.id %>
+                    <%= hidden_field_tag :chatThread_id, @chatThread.id %>
+                    <%= hidden_field_tag :post_id, post.id %>
+                    <%= f.text_area :content, class: "form-control", placeholder: "投稿内容を入力してください" %>
+                    <div class="d-flex gap-1 mt-1">
+                      <%= f.submit "更新する", class: "btn btn-primary", formmethod: :put %>
+                      <button class="btn btn-danger js-cancel" type="button" data-post-id="<%= post.id %>">キャンセル</button>
+                    </div>
+                  <% end %>
+                </div>
+            <% else %>
+              <%= post.content %>
+            <% end %>
+            </div>
             <% if @currentUser != nil && @currentUser.id == post.user_id %>
               <div class="d-flex gap-2 justify-content-end">
-                <%# <button class="btn btn-primary">更新する</button> %>
                 <%= button_to "削除する", "/boards/#{@board.id}/thread/#{@chatThread.id}/posts/#{post.id}", class: "btn btn-danger", method: :delete, data: { turbo_confirm: "本当に削除しますか?" } %>
               </div>
             <% end %>
@@ -32,7 +49,6 @@
       <%= f.label :content, "投稿内容", class: "form-label" %>
       <%= f.text_area :content, class: "form-control", placeholder: "投稿内容を入力してください" %>
     </div>
-
     <%= f.submit "投稿する", class: "btn btn-primary mt-3" %>
   <% end %>
 
@@ -40,3 +56,30 @@
 
   <%= link_to "#{@board.title}のスレッド一覧に戻る", "/boards/#{@board.id}" %>
 </div>
+
+<script>
+  var isMounted = false;
+
+  (() => {
+    if (isMounted) return;
+    isMounted = true;
+
+    const updateEls = document.querySelectorAll(".js-update")
+      const cancelButtons = document.querySelectorAll(".js-cancel")
+      updateEls.forEach((button) => {
+        button.addEventListener("click", (event) => {
+          const postId = event.target.getAttribute("data-post-id")
+          event.target.nextElementSibling.style.display = event.target.nextElementSibling.style.display === "none" ? "block" : "none"      
+        })
+      });
+
+      cancelButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
+          updateEls.forEach((el) => {
+            if (event.target.getAttribute("data-post-id") === el.getAttribute("data-post-id"))
+              el.click()
+          })
+        })
+      })
+  })();
+</script>

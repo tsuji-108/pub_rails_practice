@@ -7,4 +7,23 @@ class ChatThreadsController < ApplicationController
     @post = @chatThread.posts.build
     @currentUser = Current.user
   end
+
+  def create
+    @board = Board.find(params[:board_id])
+    unless Current.user
+      redirect_to new_session_path, alert: "ログインしてください。" and return
+    end
+    @chatThread = ChatThread.new(
+      user_id: Current.user.id,
+      board_id: @board.id,
+      title: params[:title],
+      description: params[:description],
+    )
+
+    if @chatThread.save
+      redirect_to "/boards/#{@board.id}/thread/#{@chatThread.id}"
+    else
+      render "boards/show", status: :unprocessable_entity
+    end
+  end
 end

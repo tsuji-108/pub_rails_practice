@@ -5,6 +5,6 @@ class BoardsController < ApplicationController
 
   def show
     @board = Board.find(params[:board_id])
-    @chatThread = ChatThread.find_by(board_id: params[:board_id])
+    @chatThread = ChatThread.where(board_id: params[:board_id])
   end
 end
