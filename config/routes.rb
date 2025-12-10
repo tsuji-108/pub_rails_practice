@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
 
+  # CRUD 以外の操作には as をつけると分かりやすいかも。
   get "up" => "rails/health#show", as: :rails_health_check
 
   get "/boards", to: "boards#index"
