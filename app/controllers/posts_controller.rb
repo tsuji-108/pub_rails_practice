@@ -20,7 +20,9 @@ class PostsController < ApplicationController
     @board = Board.find(params[:board_id])
     @chatThread = ChatThread.find(params[:chatThread_id])
     @post = @chatThread.posts.find(params[:id])
-    if @post.destroy
+    # TODO: タイムスタンプの更新がこれで良いか確認する
+    @post.archived_at = Time.now
+    if @post.save
       redirect_to "/boards/#{@board.id}/thread/#{@chatThread.id}"
     else
       @posts = @chatThread.posts.order(created_at: :asc)
@@ -29,12 +31,20 @@ class PostsController < ApplicationController
   end
 
   def update
-    render "chat_threads/show"
+    @post = Post.find(params[:post_id])
+    @post.content = params[:content]
+    @post.updated_at = Time.now
+
+    if @post.save
+      redirect_to "/boards/#{params[:board_id]}/thread/#{params[:chatThread_id]}"
+    else
+      render "chat_threads/show", status: :unprocessable_entity
+    end
   end
 
   private
 
   def post_params
-    params.require(:post).permit(:content)
+    params.require(:post).permit(:content, :post_id)
   end
 end
