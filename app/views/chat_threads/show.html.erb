@@ -1,47 +1,78 @@
 <div class="container mt-3">
   <h1><%= @chatThread.title %></h1>
   <p><%= @chatThread.description %></p>
-
-  <% if @posts.present? %>
-    <ul class="list-group">
-      <% Array(@posts).each do |post| %>
-        <li class="list-group-item">
-          <% if post.archived_at == nil %>
-            <div>ユーザーID: <%= post.user_id %></div>
-            <div>作成日時<time datetime="<%= post.created_at %>"><%= post.created_at %></time></div>
-            <div>
-              <% if @currentUser != nil && @currentUser.id == post.user_id %>
-                <div class="content js-update" data-post-id="<%= post.id %>"><%= post.content %></div>
-                <div class="form" style="display: none;">
-                  <%= form_with url: "/boards/#{@board.id}/thread/#{@chatThread.id}/posts/#{post.id}" do |f| %>
-                    <%= hidden_field_tag :board_id, @board.id %>
-                    <%= hidden_field_tag :chatThread_id, @chatThread.id %>
-                    <%= hidden_field_tag :post_id, post.id %>
-                    <%= f.text_area :content, class: "form-control", placeholder: "投稿内容を入力してください" %>
-                    <div class="d-flex gap-1 mt-1">
-                      <%= f.submit "更新する", class: "btn btn-primary", formmethod: :put %>
-                      <button class="btn btn-danger js-cancel" type="button" data-post-id="<%= post.id %>">キャンセル</button>
-                    </div>
-                  <% end %>
-                </div>
-            <% else %>
-              <%= post.content %>
-            <% end %>
-            </div>
-            <% if @currentUser != nil && @currentUser.id == post.user_id %>
-              <div class="d-flex gap-2 justify-content-end">
-                <%= button_to "削除する", "/boards/#{@board.id}/thread/#{@chatThread.id}/posts/#{post.id}", class: "btn btn-danger", method: :delete, data: { turbo_confirm: "本当に削除しますか?" } %>
+  <div class="accordion">
+    <div class="accordion-item">
+      <p class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          更新する
+        </button>
+      </p>
+      <div id="collapseOne" class="accordion-collapse collapse">
+        <div class="accordion-body">
+            <%= form_with url: "/boards/#{@board.id}/thread/#{@chatThread.id}/update", method: :put do |form| %>
+              <%= hidden_field_tag :board_id, @board.id %>
+              <%= hidden_field_tag :chatThread_id, @chatThread.id %>
+              <div>
+                <label for="title" class="form-label">スレッド名</label>
+                <%= form.text_field :title, placeholder: "スレッド名を入力してください", id: "title", class: "form-control", value: "#{@chatThread.title}" %>
+              </div>
+              <div class="mt-3">
+                <label for="description" class="form-label">スレッド説明文</label>
+                <%= form.text_area :description, placeholder: "スレッド説明文を入力してください", id: "description", class: "form-control", value: "#{@chatThread.description}" %>
+              </div>
+              <div class="mt-3">
+                <%= form.submit "スレッドを更新する", class: "btn btn-primary", formmethod: :put %>
               </div>
             <% end %>
-          <% else %>
-            <p>この投稿は削除されました</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="mt-3">
+    <% if @posts.present? %>
+        <ul class="list-group">
+          <% Array(@posts).each do |post| %>
+            <li class="list-group-item">
+              <% if post.archived_at == nil %>
+                <div>ユーザーID: <%= post.user_id %></div>
+                <div>作成日時<time datetime="<%= post.created_at %>"><%= post.created_at %></time></div>
+                <div>
+                  <% if @currentUser != nil && @currentUser.id == post.user_id %>
+                    <div class="content js-update" data-post-id="<%= post.id %>"><%= post.content %></div>
+                    <div class="form" style="display: none;">
+                      <%= form_with url: "/boards/#{@board.id}/thread/#{@chatThread.id}/posts/#{post.id}" do |f| %>
+                        <%= hidden_field_tag :board_id, @board.id %>
+                        <%= hidden_field_tag :chatThread_id, @chatThread.id %>
+                        <%= hidden_field_tag :post_id, post.id %>
+                        <%= f.text_area :content, class: "form-control", placeholder: "投稿内容を入力してください" %>
+                        <div class="d-flex gap-1 mt-1">
+                          <%= f.submit "更新する", class: "btn btn-primary", formmethod: :put %>
+                          <button class="btn btn-danger js-cancel" type="button" data-post-id="<%= post.id %>">キャンセル</button>
+                        </div>
+                      <% end %>
+                    </div>
+                <% else %>
+                  <%= post.content %>
+                <% end %>
+                </div>
+                <% if @currentUser != nil && @currentUser.id == post.user_id %>
+                  <div class="d-flex gap-2 justify-content-end">
+                    <%= button_to "削除する", "/boards/#{@board.id}/thread/#{@chatThread.id}/posts/#{post.id}", class: "btn btn-danger", method: :delete, data: { turbo_confirm: "本当に削除しますか?" } %>
+                  </div>
+                <% end %>
+              <% else %>
+                <p>この投稿は削除されました</p>
+              <% end %>
+            </li>
           <% end %>
-        </li>
+        </ul>
+      <% else %>
+        <p>投稿がありません。</p>
       <% end %>
-    </ul>
-  <% else %>
-    <p>投稿がありません。</p>
-  <% end %>
+  </div>
 
   <%= form_with model: @post, url: "/boards/#{@board.id}/thread/#{@chatThread.id}/posts" do |f| %>
     <%= hidden_field_tag :board_id, @board.id %>

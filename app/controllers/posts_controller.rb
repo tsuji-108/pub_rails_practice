@@ -1,11 +1,14 @@
 class PostsController < ApplicationController
   def create
     @board = Board.find(params[:board_id])
+    # Thread などは名前が被りがちなので、命名を再考した方が良い。
     @chatThread = ChatThread.find(params[:chatThread_id])
     unless Current.user
       redirect_to new_session_path, alert: "ログインしてください。" and return
     end
     @post = @chatThread.posts.build(post_params)
+    # id のみではなく Entity での関連付けをしたいため。
+    # post_params から User 情報を引っ張ってくると、なりすましが可能なため、= Current.user で入れる。
     @post.user = Current.user
 
     if @post.save
